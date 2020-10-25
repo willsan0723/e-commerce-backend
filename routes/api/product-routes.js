@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   Product.findAll({
-    include: { model: Category, model: Tag }
+    include: [{ model: Category },
+    { model: Tag }]
   }).then(data => res.json(data))
 });
 
@@ -17,7 +18,7 @@ router.get('/:id', (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
   Product.findOne({
-    include: { model: Category, model: Tag },
+    include: [{ model: Category }, { model: Tag }],
     where: {
       id: req.params.id
     }
@@ -26,14 +27,6 @@ router.get('/:id', (req, res) => {
 
 // create new product
 router.post('/', (req, res) => {
-  req.body(
-    {
-      product_name: req.body.product_name,
-      price: req.body.price,
-      stock: req.body.stock,
-      tags: req.body.tags
-    })
-
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -100,6 +93,11 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
+  Product.destroy({
+    where: {
+      id: req.params.id
+    }
+  }).then(data => res.json(data));
 });
 
 module.exports = router;
